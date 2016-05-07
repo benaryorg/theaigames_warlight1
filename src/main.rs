@@ -54,8 +54,9 @@ fn main()
 					}
 				}
 			},
-			RequestStartingRegions(available) =>
+			RequestStartingRegions(_avail) =>
 			{
+				println!("give me randomly");
 			},
 			SettingNameYou(name) => name_you = name,
 			SettingNameOther(name) => name_other = name,
