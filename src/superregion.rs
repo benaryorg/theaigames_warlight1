@@ -1,5 +1,5 @@
 #[derive(Debug,Clone,PartialEq,Eq,PartialOrd,Ord)]
-struct SuperRegion
+pub struct SuperRegion
 {
 	id: usize,
 	bonus: usize,
