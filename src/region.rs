@@ -3,6 +3,8 @@ struct Region
 {
 	id: usize,
 	count: usize,
-	player: String,
+	super_region: usize,
+	player: Option<String>,
+	neighbours: Vec<usize>,
 }
 
