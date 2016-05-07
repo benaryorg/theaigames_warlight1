@@ -6,6 +6,8 @@ use turn::Turn;
 
 mod request;
 mod turn;
+mod region;
+mod superregion;
 
 fn main()
 {
