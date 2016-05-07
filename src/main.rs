@@ -15,6 +15,7 @@ use superregion::SuperRegion;
 
 fn main()
 {
+	std::env::set_var("RUST_BACKTRACE","1");
 	let input = io::stdin();
 	let input = BufReader::new(input);
 	let input = input.lines();
