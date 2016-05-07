@@ -90,7 +90,7 @@ fn main()
 							.map(|o|regions.get(o))
 							.map(Option::unwrap)
 							.filter(|o|o.player != name_you)
-							.any(|o|o.count*2 < r.count)
+							.any(|o|o.count < r.count)
 						).collect::<Vec<_>>();
 
 					if armies_left > regs.len()
