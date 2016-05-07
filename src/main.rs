@@ -115,22 +115,25 @@ fn main()
 							);
 							armies_left -= count;
 						}
-						for r in regions.values()
-							.filter(|r|r.player == name_you)
+						while armies_left > 0
 						{
-							if armies_left <= 0
+							for r in regions.values()
+								.filter(|r|r.player == name_you)
 							{
-								break;
-							}
-							v.push(
-								Turn::Place
+								if armies_left <= 0
 								{
-									name: name_you.clone(),
-									region: r.id,
-									count: 1,
+									break;
 								}
-							);
-							armies_left -= 1;
+								v.push(
+									Turn::Place
+									{
+										name: name_you.clone(),
+										region: r.id,
+										count: 1,
+									}
+								);
+								armies_left -= 1;
+							}
 						}
 					}
 					if v.len() <= 0
