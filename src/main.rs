@@ -18,6 +18,9 @@ fn main()
 		.map(|s|s.parse::<Request>())
 		.map(Result::unwrap);
 
+	let mut name_you = String::new();
+	let mut name_other = String::new();
+
 	for req in input
 	{
 		use request::Request::*;
@@ -35,12 +38,8 @@ fn main()
 			RequestStartingRegions(available) =>
 			{
 			},
-			SettingNameYou(name) =>
-			{
-			},
-			SettingNameOther(name) =>
-			{
-			},
+			SettingNameYou(name) => name_you = name,
+			SettingNameOther(name) => name_other = name,
 			SettingArmies(count) =>
 			{
 			},
