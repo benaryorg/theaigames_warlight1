@@ -137,7 +137,19 @@ fn main()
 					{
 						v.push(Turn::Noop);
 					}
-					let v = v.iter().map(|t|format!("{}",t)).collect::<Vec<_>>();
+					let v = v.iter()
+						.filter(|t|
+							if let &&Turn::Place{count,..} = t
+							{
+								count > 0
+							}
+							else
+							{
+								true
+							}
+						)
+						.map(|t|format!("{}",t))
+						.collect::<Vec<_>>();
 					println!("{}",v.join(","));
 				}
 				for r in v.iter()
