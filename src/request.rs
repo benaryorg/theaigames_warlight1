@@ -64,7 +64,7 @@ impl FromStr for Request
 					.chunks(2)
 					.map(|c|
 						(c[0].parse::<usize>().unwrap(),c[1]
-							.split("r")
+							.split(',')
 							.map(|s|s.parse::<usize>())
 							.map(Result::unwrap)
 							.collect::<Vec<_>>()
