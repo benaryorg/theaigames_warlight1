@@ -89,10 +89,11 @@ fn main()
 						.filter(|o|o.player != name_you)
 						.any(|o|o.count*2 < r.count)
 					).collect::<Vec<_>>();
+
+				let mut v = Vec::new();
 				if armies_left > regs.len()
 				{
 					let count = armies_left / regs.len();
-					let mut v = Vec::new();
 					for r in regs
 					{
 						v.push(
@@ -127,15 +128,40 @@ fn main()
 							{
 								name: name_you.clone(),
 								region: r.id,
-								count: count,
+								count: 1,
 							}
 						);
 						armies_left -= 1;
 					}
 				}
+				let v = v.iter().map(|t|format!("{}",t)).collect::<Vec<_>>();
+				println!("{}",v.join(","));
 			},
 			TurnArmies =>
 			{
+				let mut v = Vec::new();
+				let regs = regions.values()
+					.filter(|r|r.player.eq(&name_you))
+					.map(|r|((r.id,r.count*2/3),r.neighbours.iter()
+						.map(|o|regions.get(o))
+						.map(Option::unwrap)
+						.filter(|o|o.player != name_you)
+						.filter(|o|o.count*3 < r.count)
+						.next()
+						.unwrap().id))
+					.collect::<Vec<_>>();
+				for ((r,count),n) in regs
+				{
+					v.push(
+						Turn::Turn
+						{
+							name: name_you.clone(),
+							source: r,
+							target: n,
+							count: count,
+						}
+					);
+				}
 			},
 		}
 	}
