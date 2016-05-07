@@ -82,75 +82,84 @@ fn main()
 			},
 			TurnPlace =>
 			{
-				let regs = regions.values()
-					.filter(|r|r.player == name_you)
-					.filter(|r|r.neighbours.iter()
-						.map(|o|regions.get(o))
-						.map(Option::unwrap)
-						.filter(|o|o.player != name_you)
-						.any(|o|o.count*2 < r.count)
-					).collect::<Vec<_>>();
-
 				let mut v = Vec::new();
-				if armies_left > regs.len()
 				{
-					let count = if regs.len() > 0
+					let regs = regions.values()
+						.filter(|r|r.player == name_you)
+						.filter(|r|r.neighbours.iter()
+							.map(|o|regions.get(o))
+							.map(Option::unwrap)
+							.filter(|o|o.player != name_you)
+							.any(|o|o.count*2 < r.count)
+						).collect::<Vec<_>>();
+
+					if armies_left > regs.len()
 					{
-						armies_left/regs.len()
+						let count = if regs.len() > 0
+						{
+							armies_left/regs.len()
+						}
+						else
+						{
+							1
+						};
+						for r in regs.iter()
+						{
+							v.push(
+								Turn::Place
+								{
+									name: name_you.clone(),
+									region: r.id,
+									count: count,
+								}
+							);
+							armies_left -= count;
+						}
+						v.push(
+							Turn::Place
+							{
+								name: name_you.clone(),
+								region: regions.values()
+									.filter(|r|r.player == name_you)
+									.max_by_key(|r|r.count)
+									.unwrap().id,
+								count: armies_left,
+							}
+						);
 					}
 					else
 					{
-						1
-					};
-					for r in regs
-					{
-						v.push(
-							Turn::Place
+						for r in regs.iter()
+						{
+							if armies_left <= 0
 							{
-								name: name_you.clone(),
-								region: r.id,
-								count: count,
+								break;
 							}
-						);
-						armies_left -= count;
+							v.push(
+								Turn::Place
+								{
+									name: name_you.clone(),
+									region: r.id,
+									count: 1,
+								}
+							);
+							armies_left -= 1;
+						}
 					}
-					v.push(
-						Turn::Place
-						{
-							name: name_you.clone(),
-							region: regions.values()
-								.filter(|r|r.player == name_you)
-								.max_by_key(|r|r.count)
-								.unwrap().id,
-							count: armies_left,
-						}
-					);
-				}
-				else
-				{
-					for r in regs
+					if v.len() <= 0
 					{
-						if armies_left <= 0
-						{
-							break;
-						}
-						v.push(
-							Turn::Place
-							{
-								name: name_you.clone(),
-								region: r.id,
-								count: 1,
-							}
-						);
-						armies_left -= 1;
+						v.push(Turn::Noop);
+					}
+					let v = v.iter().map(|t|format!("{}",t)).collect::<Vec<_>>();
+					println!("{}",v.join(","));
+				}
+				for r in v.iter()
+				{
+					if let &Turn::Place{region,count,..} = r
+					{
+						regions.get_mut(&region).unwrap().count += count;
 					}
 				}
-				if v.len() <= 0
-				{
-					v.push(Turn::Noop);
-				}
-				let v = v.iter().map(|t|format!("{}",t)).collect::<Vec<_>>();
-				println!("{}",v.join(","));
 			},
 			TurnArmies =>
 			{
