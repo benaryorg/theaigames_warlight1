@@ -145,6 +145,10 @@ fn main()
 						armies_left -= 1;
 					}
 				}
+				if v.len() <= 0
+				{
+					v.push(Turn::Noop);
+				}
 				let v = v.iter().map(|t|format!("{}",t)).collect::<Vec<_>>();
 				println!("{}",v.join(","));
 			},
@@ -152,7 +156,7 @@ fn main()
 			{
 				let mut v = Vec::new();
 				let regs = regions.values()
-					.filter(|r|r.player.eq(&name_you))
+					.filter(|r|r.player == name_you)
 					.filter_map(|r|
 					{
 						let x =r.neighbours.iter()
@@ -164,7 +168,7 @@ fn main()
 						.map(|o|o.id);
 						if let Some(x) = x
 						{
-							Some(((r.id,r.count*2/3),x))
+							Some(((r.id,(r.count*2)/3),x))
 						}
 						else
 						{
@@ -184,6 +188,12 @@ fn main()
 						}
 					);
 				}
+				if v.len() <= 0
+				{
+					v.push(Turn::Noop);
+				}
+				let v = v.iter().map(|t|format!("{}",t)).collect::<Vec<_>>();
+				println!("{}",v.join(","));
 			},
 		}
 	}
