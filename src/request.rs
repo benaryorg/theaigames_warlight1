@@ -95,14 +95,21 @@ impl FromStr for Request
 					.collect::<Vec<_>>();
 				Ok(UpdateMap(v))
 			},
-			(Some("opponent_moves"),Some(_)) =>
+			(Some("opponent_moves"),_) =>
 			{
-				Ok(TurnOther(s.split_at(s.find(' ').unwrap()).1
-					.split(',')
-					.map(|s|s.parse::<Turn>())
-					.map(|r|r.unwrap_or(Turn::Noop))
-					.collect::<Vec<_>>()
-				))
+				if let Some(i) = s.find(' ')
+				{
+					Ok(TurnOther(s.split_at(i).1
+						.split(',')
+						.map(|s|s.parse::<Turn>())
+						.map(|r|r.unwrap_or(Turn::Noop))
+						.collect::<Vec<_>>()
+					))
+				}
+				else
+				{
+					Ok(TurnOther(Vec::new()))
+				}
 			},
 			(Some("go"),Some("place_armies")) => Ok(TurnPlace),
 			(Some("go"),Some("attack/transfer")) => Ok(TurnArmies),

@@ -94,7 +94,14 @@ fn main()
 				let mut v = Vec::new();
 				if armies_left > regs.len()
 				{
-					let count = armies_left / regs.len();
+					let count = if regs.len() > 0
+					{
+						armies_left/regs.len()
+					}
+					else
+					{
+						1
+					};
 					for r in regs
 					{
 						v.push(
