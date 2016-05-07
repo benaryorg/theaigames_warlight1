@@ -6,8 +6,8 @@ pub struct ParseSuperRegionError;
 #[derive(Debug,Clone,PartialEq,Eq,PartialOrd,Ord)]
 pub struct SuperRegion
 {
-	id: usize,
-	bonus: usize,
+	pub id: usize,
+	pub bonus: usize,
 }
 
 impl FromStr for SuperRegion

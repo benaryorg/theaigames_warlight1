@@ -6,11 +6,11 @@ pub struct ParseRegionError;
 #[derive(Debug,Clone,PartialEq,Eq,PartialOrd,Ord)]
 pub struct Region
 {
-	id: usize,
-	count: usize,
-	super_region: usize,
-	player: Option<String>,
-	neighbours: Vec<usize>,
+	pub id: usize,
+	pub count: usize,
+	pub super_region: usize,
+	pub player: Option<String>,
+	pub neighbours: Vec<usize>,
 }
 
 impl FromStr for Region
