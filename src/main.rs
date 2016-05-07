@@ -37,9 +37,11 @@ fn main()
 		{
 			ListSuperRegions(sregions) =>
 			{
+				sup_regions.extend(sregions.iter().map(|sr|(sr.id,sr.clone())));
 			},
-			ListRegions(regions) =>
+			ListRegions(regs) =>
 			{
+				regions.extend(regs.iter().map(|r|(r.id,r.clone())));
 			},
 			ListNeighbours(relations) =>
 			{
