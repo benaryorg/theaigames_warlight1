@@ -150,13 +150,24 @@ fn main()
 				let mut v = Vec::new();
 				let regs = regions.values()
 					.filter(|r|r.player.eq(&name_you))
-					.map(|r|((r.id,r.count*2/3),r.neighbours.iter()
+					.filter_map(|r|
+					{
+						let x =r.neighbours.iter()
 						.map(|o|regions.get(o))
 						.map(Option::unwrap)
 						.filter(|o|o.player != name_you)
 						.filter(|o|o.count*3 < r.count)
 						.next()
-						.unwrap().id))
+						.map(|o|o.id);
+						if let Some(x) = x
+						{
+							Some(((r.id,r.count*2/3),x))
+						}
+						else
+						{
+							None
+						}
+					})
 					.collect::<Vec<_>>();
 				for ((r,count),n) in regs
 				{
