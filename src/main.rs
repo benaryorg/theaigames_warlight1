@@ -45,6 +45,14 @@ fn main()
 			},
 			ListNeighbours(relations) =>
 			{
+				for (id,neighbours) in relations
+				{
+					regions.get_mut(&id).unwrap().neighbours.extend(neighbours.iter());
+					for n in neighbours
+					{
+						regions.get_mut(&n).unwrap().neighbours.push(id);
+					}
+				}
 			},
 			RequestStartingRegions(available) =>
 			{
