@@ -124,15 +124,22 @@ fn main()
 								{
 									break;
 								}
-								v.push(
-									Turn::Place
+								for n in regions.get(&r.id).unwrap().neighbours.iter()
+								{
+									if regions.get(&n).unwrap().player != name_you
 									{
-										name: name_you.clone(),
-										region: r.id,
-										count: 1,
+										v.push(
+											Turn::Place
+											{
+												name: name_you.clone(),
+												region: r.id,
+												count: 1,
+											}
+										);
+										armies_left -= 1;
+										break;
 									}
-								);
-								armies_left -= 1;
+								}
 							}
 						}
 					}
