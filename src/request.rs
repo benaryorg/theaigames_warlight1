@@ -1,5 +1,7 @@
 use std::str::FromStr;
 use turn::Turn;
+use superregion::SuperRegion;
+use region::Region;
 
 #[derive(Debug,Clone,PartialEq)]
 pub struct ParseRequestError;
@@ -7,8 +9,8 @@ pub struct ParseRequestError;
 #[derive(Debug,Clone,PartialEq,Eq,PartialOrd,Ord)]
 pub enum Request
 {
-	ListSuperRegions(Vec<(usize,usize)>),
-	ListRegions(Vec<(usize,usize)>),
+	ListSuperRegions(Vec<SuperRegion>),
+	ListRegions(Vec<Region>),
 	ListNeighbours(Vec<(usize,Vec<usize>)>),
 	RequestStartingRegions(Vec<usize>),
 	SettingNameYou(String),
@@ -34,19 +36,25 @@ impl FromStr for Request
 		{
 			(Some("setup_map"),Some("super_regions")) =>
 			{
-				let v = args
-					.map(|s|s.parse::<usize>())
+				let v = args.collect::<Vec<_>>();
+				let v = v
+					.chunks(2)
+					.map(|s|s.join(" "))
+					.map(|s|s.parse::<SuperRegion>())
 					.map(Result::unwrap)
 					.collect::<Vec<_>>();
-				Ok(ListSuperRegions(v.chunks(2).map(|c|(c[0],c[1])).collect::<Vec<_>>()))
+				Ok(ListSuperRegions(v))
 			},
 			(Some("setup_map"),Some("regions")) =>
 			{
-				let v = args
-					.map(|s|s.parse::<usize>())
+				let v = args.collect::<Vec<_>>();
+				let v = v
+					.chunks(2)
+					.map(|s|s.join(" "))
+					.map(|s|s.parse::<Region>())
 					.map(Result::unwrap)
 					.collect::<Vec<_>>();
-				Ok(ListRegions(v.chunks(2).map(|c|(c[0],c[1])).collect::<Vec<_>>()))
+				Ok(ListRegions(v))
 			},
 			(Some("setup_map"),Some("neighbors")) =>
 			{
