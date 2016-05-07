@@ -115,14 +115,22 @@ fn main()
 							);
 							armies_left -= count;
 						}
+						let id = if regs.len() > 0
+						{
+							regs[0].id
+						}
+						else
+						{
+							regions.values()
+								.filter(|r|r.player == name_you)
+								.max_by_key(|r|r.count)
+								.unwrap().id
+						};
 						v.push(
 							Turn::Place
 							{
 								name: name_you.clone(),
-								region: regions.values()
-									.filter(|r|r.player == name_you)
-									.max_by_key(|r|r.count)
-									.unwrap().id,
+								region: id,
 								count: armies_left,
 							}
 						);
