@@ -89,8 +89,8 @@ fn main()
 						.filter(|r|r.neighbours.iter()
 							.map(|o|regions.get(o))
 							.map(Option::unwrap)
-							.filter(|o|o.player != name_you)
-							.any(|o|o.count < r.count)
+							.filter(|o|o.player == name_other)
+							.any(|o|o.count > r.count)
 						).collect::<Vec<_>>();
 
 					if armies_left > regs.len()
@@ -115,29 +115,8 @@ fn main()
 							);
 							armies_left -= count;
 						}
-						let id = if regs.len() > 0
-						{
-							regs[0].id
-						}
-						else
-						{
-							regions.values()
-								.filter(|r|r.player == name_you)
-								.max_by_key(|r|r.count)
-								.unwrap().id
-						};
-						v.push(
-							Turn::Place
-							{
-								name: name_you.clone(),
-								region: id,
-								count: armies_left,
-							}
-						);
-					}
-					else
-					{
-						for r in regs.iter()
+						for r in regions.values()
+							.filter(|r|r.player == name_you)
 						{
 							if armies_left <= 0
 							{
@@ -180,7 +159,7 @@ fn main()
 						.map(|o|regions.get(o))
 						.map(Option::unwrap)
 						.filter(|o|o.player != name_you)
-						.filter(|o|o.count*3 <= r.count)
+						.filter(|o|o.count*5 <= r.count*2)
 						.next()
 						.map(|o|o.id);
 						if let Some(x) = x
