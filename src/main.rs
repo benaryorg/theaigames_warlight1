@@ -65,6 +65,12 @@ fn main()
 			},
 			UpdateMap(updates) =>
 			{
+				for u in updates
+				{
+					let mut reg = regions.get_mut(&u.0).unwrap();
+					reg.player = Some(u.1);
+					reg.count = u.2;
+				}
 			},
 			TurnOther(turns) =>
 			{
