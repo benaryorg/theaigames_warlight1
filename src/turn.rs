@@ -8,8 +8,19 @@ pub struct ParseTurnError;
 pub enum Turn
 {
 	StartingRegions(usize,usize,usize,usize,usize,usize),
-	Place(String,usize,usize),
-	Turn(String,usize,usize,usize),
+	Place
+	{
+		name: String,
+		region: usize,
+		count: usize,
+	},
+	Turn
+	{
+		name: String,
+		source: usize,
+		target: usize,
+		count: usize,
+	},
 	Noop,
 }
 
@@ -25,8 +36,21 @@ impl FromStr for Turn
 		match args.len()
 		{
 			2 => Ok(Noop),
-			4 => Ok(Place(args[0].to_owned(),args[2].parse().unwrap(),args[3].parse().unwrap())),
-			5 => Ok(Turn(args[0].to_owned(),args[2].parse().unwrap(),args[3].parse().unwrap(),args[4].parse().unwrap())),
+			4 => Ok(
+				Place
+				{
+					name: args[0].to_owned(),
+					region: args[2].parse().unwrap(),
+					count: args[3].parse().unwrap(),
+				}),
+			5 => Ok(
+				Turn
+				{
+					name: args[0].to_owned(),
+					source: args[2].parse().unwrap(),
+					target: args[3].parse().unwrap(),
+					count: args[4].parse().unwrap(),
+				}),
 			6 =>
 			{
 				let mut args = args.iter().map(|s|s.parse::<usize>()).map(Result::unwrap);
@@ -53,8 +77,8 @@ impl fmt::Display for Turn
 		match self
 		{
 			&StartingRegions(a,b,c,d,e,f_) => write!(f,"{} {} {} {} {} {}",a,b,c,d,e,f_),
-			&Place(ref name,region,count) => write!(f,"{} place_armies {} {}",name,region,count),
-			&Turn(ref name,source,target,count) => write!(f,"{} attack/transfer {} {} {}",name,source,target,count),
+			&Place{ref name,region,count} => write!(f,"{} place_armies {} {}",name,region,count),
+			&Turn{ref name,source,target,count} => write!(f,"{} attack/transfer {} {} {}",name,source,target,count),
 			&Noop => write!(f,"No moves"),
 		}
 	}
