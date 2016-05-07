@@ -23,7 +23,39 @@ fn main()
 		use request::Request::*;
 		match req
 		{
-			_ => unreachable!(),
+			ListSuperRegions(sregions) =>
+			{
+			},
+			ListRegions(regions) =>
+			{
+			},
+			ListNeighbours(relations) =>
+			{
+			},
+			RequestStartingRegions(available) =>
+			{
+			},
+			SettingNameYou(name) =>
+			{
+			},
+			SettingNameOther(name) =>
+			{
+			},
+			SettingArmies(count) =>
+			{
+			},
+			UpdateMap(updates) =>
+			{
+			},
+			TurnOther(turns) =>
+			{
+			},
+			TurnPlace =>
+			{
+			},
+			TurnArmies =>
+			{
+			},
 		}
 	}
 }
