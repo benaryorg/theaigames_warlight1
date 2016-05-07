@@ -30,6 +30,8 @@ fn main()
 	let mut sup_regions: HashMap<usize,SuperRegion> = HashMap::new();
 	let mut regions: HashMap<usize,Region> = HashMap::new();
 
+	let mut armies_left = 0;
+
 	for req in input
 	{
 		use request::Request::*;
@@ -62,21 +64,75 @@ fn main()
 			SettingNameOther(name) => name_other = name,
 			SettingArmies(count) =>
 			{
+				armies_left = count;
 			},
 			UpdateMap(updates) =>
 			{
 				for u in updates
 				{
 					let mut reg = regions.get_mut(&u.0).unwrap();
-					reg.player = Some(u.1);
+					reg.player = u.1;
 					reg.count = u.2;
 				}
 			},
-			TurnOther(turns) =>
+			TurnOther(_turns) =>
 			{
+				//TODO: what the hell?
 			},
 			TurnPlace =>
 			{
+				let regs = regions.values()
+					.filter(|r|r.player.eq(&name_you))
+					.filter(|r|r.neighbours.iter()
+						.map(|o|regions.get(o))
+						.map(Option::unwrap)
+						.filter(|o|o.player != name_you)
+						.any(|o|o.count*2 < r.count)
+					).collect::<Vec<_>>();
+				if armies_left > regs.len()
+				{
+					let count = armies_left / regs.len();
+					let mut v = Vec::new();
+					for r in regs
+					{
+						v.push(
+							Turn::Place
+							{
+								name: name_you.clone(),
+								region: r.id,
+								count: count,
+							}
+						);
+						armies_left -= count;
+					}
+					v.push(
+						Turn::Place
+						{
+							name: name_you.clone(),
+							region: regions.values().max_by_key(|r|r.count).unwrap().id,
+							count: armies_left,
+						}
+					);
+				}
+				else
+				{
+					for r in regs
+					{
+						if armies_left <= 0
+						{
+							break;
+						}
+						v.push(
+							Turn::Place
+							{
+								name: name_you.clone(),
+								region: r.id,
+								count: count,
+							}
+						);
+						armies_left -= 1;
+					}
+				}
 			},
 			TurnArmies =>
 			{

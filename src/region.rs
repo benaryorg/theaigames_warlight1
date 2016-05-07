@@ -9,7 +9,7 @@ pub struct Region
 	pub id: usize,
 	pub count: usize,
 	pub super_region: usize,
-	pub player: Option<String>,
+	pub player: String,
 	pub neighbours: Vec<usize>,
 }
 
@@ -25,7 +25,7 @@ impl FromStr for Region
 			id: sp.next().unwrap().parse().unwrap(),
 			count: 0,
 			super_region: sp.next().unwrap().parse().unwrap(),
-			player: None,
+			player: "unknown".into(),
 			neighbours: Vec::new(),
 		})
 	}
