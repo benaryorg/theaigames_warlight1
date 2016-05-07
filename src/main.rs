@@ -83,7 +83,7 @@ fn main()
 			TurnPlace =>
 			{
 				let regs = regions.values()
-					.filter(|r|r.player.eq(&name_you))
+					.filter(|r|r.player == name_you)
 					.filter(|r|r.neighbours.iter()
 						.map(|o|regions.get(o))
 						.map(Option::unwrap)
@@ -118,7 +118,10 @@ fn main()
 						Turn::Place
 						{
 							name: name_you.clone(),
-							region: regions.values().max_by_key(|r|r.count).unwrap().id,
+							region: regions.values()
+								.filter(|r|r.player == name_you)
+								.max_by_key(|r|r.count)
+								.unwrap().id,
 							count: armies_left,
 						}
 					);
