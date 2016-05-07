@@ -1,6 +1,7 @@
 use std::io;
 use std::io::BufReader;
 use std::io::BufRead;
+use std::collections::HashMap;
 use request::Request;
 use turn::Turn;
 
@@ -22,6 +23,9 @@ fn main()
 
 	let mut name_you = String::new();
 	let mut name_other = String::new();
+
+	let mut sup_regions = HashMap::new();
+	let mut regions = HashMap::new();
 
 	for req in input
 	{
