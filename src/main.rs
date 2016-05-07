@@ -180,7 +180,7 @@ fn main()
 						.map(|o|regions.get(o))
 						.map(Option::unwrap)
 						.filter(|o|o.player != name_you)
-						.filter(|o|o.count*3 < r.count)
+						.filter(|o|o.count*3 <= r.count)
 						.next()
 						.map(|o|o.id);
 						if let Some(x) = x
