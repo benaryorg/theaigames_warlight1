@@ -91,62 +91,63 @@ fn main()
 							.map(Option::unwrap)
 							.filter(|o|o.player == name_other)
 							.any(|o|o.count >= r.count)
-						).collect::<Vec<_>>();
+						)
+						.take(3)
+						.collect::<Vec<_>>();
 
-					if armies_left > regs.len()
+					let count = if regs.len() > 0
 					{
-						let count = if regs.len() > 0
-						{
-							armies_left/regs.len()
-						}
-						else
-						{
-							1
-						};
-						for r in regs.iter()
-						{
-							v.push(
-								Turn::Place
-								{
-									name: name_you.clone(),
-									region: r.id,
-									count: count,
-								}
-							);
-							armies_left -= count;
-						}
-						while armies_left > 0
-						{
-							for r in regions.values()
-								.filter(|r|r.player == name_you)
+						armies_left/regs.len()
+					}
+					else
+					{
+						1
+					};
+					for r in regs.iter()
+					{
+						v.push(
+							Turn::Place
 							{
-								if armies_left <= 0
+								name: name_you.clone(),
+								region: r.id,
+								count: count,
+							}
+						);
+						armies_left -= count;
+					}
+					while armies_left > 0
+					{
+						for r in regions.values()
+							.filter(|r|r.player == name_you)
+						{
+							if armies_left <= 0
+							{
+								break;
+							}
+							for n in regions.get(&r.id).unwrap().neighbours.iter()
+							{
+								if regions.get(&n).unwrap().player != name_you
 								{
+									v.push(
+										Turn::Place
+										{
+											name: name_you.clone(),
+											region: r.id,
+											count: 1,
+										}
+									);
+									armies_left -= 1;
 									break;
-								}
-								for n in regions.get(&r.id).unwrap().neighbours.iter()
-								{
-									if regions.get(&n).unwrap().player != name_you
-									{
-										v.push(
-											Turn::Place
-											{
-												name: name_you.clone(),
-												region: r.id,
-												count: 1,
-											}
-										);
-										armies_left -= 1;
-										break;
-									}
 								}
 							}
 						}
 					}
-					if v.len() <= 0
-					{
-						v.push(Turn::Noop);
-					}
+				}
+				if v.len() <= 0
+				{
+					v.push(Turn::Noop);
+				}
+				{
 					let v = v.iter()
 						.filter(|t|
 							if let &&Turn::Place{count,..} = t
