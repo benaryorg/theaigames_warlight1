@@ -1,7 +1,11 @@
+extern crate rand;
+
 use std::io;
 use std::io::BufReader;
 use std::io::BufRead;
 use std::collections::HashMap;
+
+use rand::Rng;
 
 mod request;
 mod turn;
@@ -24,6 +28,8 @@ fn main()
 		.filter(|s|s.len()>0)
 		.map(|s|s.parse::<Request>())
 		.map(Result::unwrap);
+
+	let mut rng = rand::thread_rng();
 
 	let mut name_you = String::new();
 	let mut name_other = String::new();
@@ -55,6 +61,10 @@ fn main()
 					{
 						regions.get_mut(&n).unwrap().neighbours.push(id);
 					}
+				}
+				for (_,r) in regions.iter_mut()
+				{
+					rng.shuffle(&mut r.neighbours);
 				}
 			},
 			RequestStartingRegions(_avail) =>
