@@ -188,16 +188,16 @@ fn main()
 					.filter(|r|r.player == name_you)
 					.filter_map(|r|
 					{
-						let x =r.neighbours.iter()
+						let x = r.neighbours.iter()
 						.map(|o|regions.get(o))
 						.map(Option::unwrap)
 						.filter(|o|o.player != name_you)
-						.filter(|o|o.count*5 <= r.count*2)
+						.filter(|o|o.count*2 <= r.count)
 						.next()
 						.map(|o|o.id);
 						if let Some(x) = x
 						{
-							Some(((r.id,(r.count*2)/3),x))
+							Some(((r.id,regions[&x].count),x))
 						}
 						else
 						{
