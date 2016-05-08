@@ -88,7 +88,7 @@ fn main()
 			},
 			TurnOther(_turns) =>
 			{
-				//TODO: what the hell?
+				//TODO: analyze enemy
 			},
 			TurnPlace =>
 			{
