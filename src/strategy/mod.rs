@@ -1,5 +1,4 @@
 pub mod fastspread;
-pub mod unimplemented;
 
 use request::Request;
 use region::Region;

@@ -14,6 +14,7 @@ use request::Request;
 use rawturn::RawTurn;
 use turn::Turn;
 use strategy::Strategy;
+use strategy::fastspread::FastSpread;
 use player::Player;
 
 fn main()
@@ -31,7 +32,7 @@ fn main()
 	let mut name_you = String::new();
 	let mut name_other = String::new();
 
-	let mut strategy = strategy::unimplemented::Unimplemented;
+	let mut strategy = FastSpread::new();
 
 	let mut armies_left = 0;
 
