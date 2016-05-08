@@ -4,5 +4,4 @@ version = "0.2.4"
 authors = ["benaryorg <binary@benary.org>"]
 
 [dependencies]
-rand = "0.3"
 

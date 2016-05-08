@@ -1,5 +1,7 @@
 use std::str::FromStr;
 
+use player::Player;
+
 #[derive(Debug,Clone,PartialEq)]
 pub struct ParseRegionError;
 
@@ -9,7 +11,7 @@ pub struct Region
 	pub id: usize,
 	pub count: usize,
 	pub super_region: usize,
-	pub player: String,
+	pub player: Player,
 	pub neighbours: Vec<usize>,
 }
 
@@ -25,7 +27,7 @@ impl FromStr for Region
 			id: sp.next().unwrap().parse().unwrap(),
 			count: 0,
 			super_region: sp.next().unwrap().parse().unwrap(),
-			player: "unknown".into(),
+			player: Player::Unknown,
 			neighbours: Vec::new(),
 		})
 	}

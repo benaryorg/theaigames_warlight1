@@ -1,21 +1,20 @@
-extern crate rand;
-
 use std::io;
 use std::io::BufReader;
 use std::io::BufRead;
-use std::collections::HashMap;
 
-use rand::Rng;
-
-mod request;
-mod turn;
-mod region;
-mod superregion;
+pub mod request;
+pub mod rawturn;
+pub mod turn;
+pub mod region;
+pub mod superregion;
+pub mod player;
+pub mod strategy;
 
 use request::Request;
+use rawturn::RawTurn;
 use turn::Turn;
-use region::Region;
-use superregion::SuperRegion;
+use strategy::Strategy;
+use player::Player;
 
 fn main()
 {
@@ -29,47 +28,54 @@ fn main()
 		.map(|s|s.parse::<Request>())
 		.map(Result::unwrap);
 
-	let mut rng = rand::thread_rng();
-
 	let mut name_you = String::new();
 	let mut name_other = String::new();
 
-	let mut sup_regions: HashMap<usize,SuperRegion> = HashMap::new();
-	let mut regions: HashMap<usize,Region> = HashMap::new();
+	let mut strategy = strategy::unimplemented::Unimplemented;
 
 	let mut armies_left = 0;
 
 	for req in input
 	{
 		use request::Request::*;
+
+		let (consumed,output) = strategy.raw_event(&req);
+
+		if let Some(output) = output
+		{
+			println!("{}",output);
+		}
+
+		if consumed
+		{
+			continue;
+		}
+
 		match req
 		{
-			ListSuperRegions(sregions) =>
+			ListSuperRegions(sregs) =>
 			{
-				sup_regions.extend(sregions.iter().map(|sr|(sr.id,sr.clone())));
+				strategy.set_superregions(sregs);
 			},
 			ListRegions(regs) =>
 			{
-				regions.extend(regs.iter().map(|r|(r.id,r.clone())));
+				strategy.set_regions(regs);
 			},
 			ListNeighbours(relations) =>
 			{
 				for (id,neighbours) in relations
 				{
-					regions.get_mut(&id).unwrap().neighbours.extend(neighbours.iter());
-					for n in neighbours
+					strategy.region_mut(id).unwrap().neighbours.extend(neighbours.iter());
+					for n in neighbours.iter()
 					{
-						regions.get_mut(&n).unwrap().neighbours.push(id);
+						strategy.region_mut(*n).unwrap().neighbours.push(id);
 					}
 				}
-				for (_,r) in regions.iter_mut()
-				{
-					rng.shuffle(&mut r.neighbours);
-				}
 			},
-			RequestStartingRegions(_avail) =>
+			RequestStartingRegions(avail) =>
 			{
-				println!("give me randomly");
+				let (a,b,c,d,e,f) = strategy.get_starting_regions(avail);
+				println!("{}",RawTurn::StartingRegions(a,b,c,d,e,f));
 			},
 			SettingNameYou(name) => name_you = name,
 			SettingNameOther(name) => name_other = name,
@@ -81,148 +87,78 @@ fn main()
 			{
 				for u in updates
 				{
-					let mut reg = regions.get_mut(&u.0).unwrap();
-					reg.player = u.1;
+					let mut reg = strategy.region_mut(u.0).unwrap();
+					reg.player = [
+						(name_you.clone(),Player::You),
+						(name_other.clone(),Player::Other),
+						("neutral".to_owned(),Player::Neutral)
+					].iter()
+						.filter(|x|x.0 == u.1)
+						.map(|x|x.1)
+						.next()
+						.unwrap_or(Player::Unknown);
 					reg.count = u.2;
 				}
 			},
 			TurnOther(_turns) =>
 			{
-				//TODO: analyze enemy
+				//TODO: remap
 			},
 			TurnPlace =>
 			{
-				let mut v = Vec::new();
-				{
-					let regs = regions.values()
-						.filter(|r|r.player == name_you)
-						.filter(|r|r.neighbours.iter()
-							.map(|o|regions.get(o))
-							.map(Option::unwrap)
-							.filter(|o|o.player == name_other)
-							.any(|o|o.count >= r.count)
-						)
-						.take(3)
-						.collect::<Vec<_>>();
-
-					let count = if regs.len() > 0
+				let v = strategy.placement(armies_left).iter()
+					.filter_map(|t|if let &Turn::Place{region,count,..} = t
 					{
-						armies_left/regs.len()
+						strategy.region_mut(region).unwrap().count -= count;
+						Some(RawTurn::Place
+						{
+							name: name_you.clone(),
+							region: region,
+							count: count,
+						})
 					}
 					else
 					{
-						1
-					};
-					for r in regs.iter()
-					{
-						v.push(
-							Turn::Place
-							{
-								name: name_you.clone(),
-								region: r.id,
-								count: count,
-							}
-						);
-						armies_left -= count;
-					}
-					while armies_left > 0
-					{
-						for r in regions.values()
-							.filter(|r|r.player == name_you)
-						{
-							if armies_left <= 0
-							{
-								break;
-							}
-							for n in regions.get(&r.id).unwrap().neighbours.iter()
-							{
-								if regions.get(&n).unwrap().player != name_you
-								{
-									v.push(
-										Turn::Place
-										{
-											name: name_you.clone(),
-											region: r.id,
-											count: 1,
-										}
-									);
-									armies_left -= 1;
-									break;
-								}
-							}
-						}
-					}
-				}
+						None
+					})
+					.map(|t|format!("{}",t))
+					.collect::<Vec<_>>();
 				if v.len() <= 0
 				{
-					v.push(Turn::Noop);
+					println!("{}",RawTurn::Noop);
 				}
+				else
 				{
-					let v = v.iter()
-						.filter(|t|
-							if let &&Turn::Place{count,..} = t
-							{
-								count > 0
-							}
-							else
-							{
-								true
-							}
-						)
-						.map(|t|format!("{}",t))
-						.collect::<Vec<_>>();
 					println!("{}",v.join(","));
-				}
-				for r in v.iter()
-				{
-					if let &Turn::Place{region,count,..} = r
-					{
-						regions.get_mut(&region).unwrap().count += count;
-					}
 				}
 			},
 			TurnArmies =>
 			{
-				let mut v = Vec::new();
-				let regs = regions.values()
-					.filter(|r|r.player == name_you)
-					.filter_map(|r|
+				let v = strategy.turn().iter()
+					.filter_map(|t|if let &Turn::Turn{source,target,count,..} = t
 					{
-						let x = r.neighbours.iter()
-						.map(|o|regions.get(o))
-						.map(Option::unwrap)
-						.filter(|o|o.player != name_you)
-						.filter(|o|o.count*2 < r.count)
-						.next()
-						.map(|o|o.id);
-						if let Some(x) = x
-						{
-							Some(((r.id,r.count-2),x))
-						}
-						else
-						{
-							None
-						}
-					})
-					.collect::<Vec<_>>();
-				for ((r,count),n) in regs
-				{
-					v.push(
-						Turn::Turn
+						Some(RawTurn::Turn
 						{
 							name: name_you.clone(),
-							source: r,
-							target: n,
 							count: count,
-						}
-					);
-				}
+							source: source,
+							target: target,
+						})
+					}
+					else
+					{
+						None
+					})
+					.map(|t|format!("{}",t))
+					.collect::<Vec<_>>();
 				if v.len() <= 0
 				{
-					v.push(Turn::Noop);
+					println!("{}",RawTurn::Noop);
 				}
-				let v = v.iter().map(|t|format!("{}",t)).collect::<Vec<_>>();
-				println!("{}",v.join(","));
+				else
+				{
+					println!("{}",v.join(","));
+				}
 			},
 		}
 	}

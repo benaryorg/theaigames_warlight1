@@ -1,5 +1,5 @@
 use std::str::FromStr;
-use turn::Turn;
+use rawturn::RawTurn;
 use superregion::SuperRegion;
 use region::Region;
 
@@ -17,7 +17,7 @@ pub enum Request
 	SettingNameOther(String),
 	SettingArmies(usize),
 	UpdateMap(Vec<(usize,String,usize)>),
-	TurnOther(Vec<Turn>),
+	TurnOther(Vec<RawTurn>),
 	TurnPlace,
 	TurnArmies,
 }
@@ -100,9 +100,10 @@ impl FromStr for Request
 				if let Some(i) = s.find(' ')
 				{
 					Ok(TurnOther(s.split_at(i).1
+						//TODO: not seperated by ',', must parse
 						.split(',')
-						.map(|s|s.parse::<Turn>())
-						.map(|r|r.unwrap_or(Turn::Noop))
+						.map(|s|s.parse::<RawTurn>())
+						.map(|r|r.unwrap_or(RawTurn::Noop))
 						.collect::<Vec<_>>()
 					))
 				}
