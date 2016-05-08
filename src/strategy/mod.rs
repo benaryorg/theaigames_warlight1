@@ -1,7 +1,7 @@
 pub mod fastspread;
 
-use request::Request;
 use region::Region;
+use request::Request;
 use superregion::SuperRegion;
 use turn::Turn;
 

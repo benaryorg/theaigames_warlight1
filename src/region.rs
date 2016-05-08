@@ -1,5 +1,5 @@
-use std::str::FromStr;
 use std::collections::BTreeSet;
+use std::str::FromStr;
 
 use player::Player;
 

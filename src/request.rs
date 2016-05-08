@@ -1,7 +1,7 @@
-use std::str::FromStr;
 use rawturn::RawTurn;
-use superregion::SuperRegion;
 use region::Region;
+use std::str::FromStr;
+use superregion::SuperRegion;
 
 #[derive(Debug,Clone,PartialEq)]
 pub struct ParseRequestError;

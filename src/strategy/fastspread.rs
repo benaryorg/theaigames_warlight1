@@ -1,7 +1,7 @@
-use strategy::Strategy;
 use region::Region;
-use turn::Turn;
+use strategy::Strategy;
 use superregion::SuperRegion;
+use turn::Turn;
 
 pub struct FastSpread;
 

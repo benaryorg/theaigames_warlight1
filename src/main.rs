@@ -1,21 +1,21 @@
 use std::io;
-use std::io::BufReader;
 use std::io::BufRead;
+use std::io::BufReader;
 
-pub mod request;
-pub mod rawturn;
-pub mod turn;
-pub mod region;
-pub mod superregion;
 pub mod player;
+pub mod rawturn;
+pub mod region;
+pub mod request;
 pub mod strategy;
+pub mod superregion;
+pub mod turn;
 
-use request::Request;
+use player::Player;
 use rawturn::RawTurn;
-use turn::Turn;
+use request::Request;
 use strategy::Strategy;
 use strategy::fastspread::FastSpread;
-use player::Player;
+use turn::Turn;
 
 fn main()
 {
