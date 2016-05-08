@@ -68,7 +68,7 @@ fn main()
 					strategy.region_mut(id).unwrap().neighbours.extend(neighbours.iter());
 					for n in neighbours.iter()
 					{
-						strategy.region_mut(*n).unwrap().neighbours.push(id);
+						strategy.region_mut(*n).unwrap().neighbours.insert(id);
 					}
 				}
 			},

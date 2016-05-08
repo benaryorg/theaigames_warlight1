@@ -1,4 +1,5 @@
 use std::str::FromStr;
+use std::collections::BTreeSet;
 
 use player::Player;
 
@@ -12,7 +13,7 @@ pub struct Region
 	pub count: usize,
 	pub super_region: usize,
 	pub player: Player,
-	pub neighbours: Vec<usize>,
+	pub neighbours: BTreeSet<usize>,
 }
 
 impl FromStr for Region
@@ -28,7 +29,7 @@ impl FromStr for Region
 			count: 0,
 			super_region: sp.next().unwrap().parse().unwrap(),
 			player: Player::Unknown,
-			neighbours: Vec::new(),
+			neighbours: BTreeSet::new(),
 		})
 	}
 }
