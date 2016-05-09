@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/benaryorg/theaigames_warlight1.svg?branch=master)](https://travis-ci.org/benaryorg/theaigames_warlight1)
+
 # TheAIGames
 
 As to be found on [theaigames](https://theaigames.com) provides the ability to fight in multiple games using bots.
