@@ -75,8 +75,14 @@ fn main()
 			},
 			RequestStartingRegions(avail) =>
 			{
-				let (a,b,c,d,e,f) = strategy.get_starting_regions(avail);
-				println!("{}",RawTurn::StartingRegions(a,b,c,d,e,f));
+				if let Some((a,b,c,d,e,f)) = strategy.get_starting_regions(avail)
+				{
+					println!("{}",RawTurn::StartingRegions(a,b,c,d,e,f));
+				}
+				else
+				{
+					println!("give me randomly");
+				}
 			},
 			SettingNameYou(name) => name_you = name,
 			SettingNameOther(name) => name_other = name,

@@ -18,7 +18,7 @@ pub trait Strategy
 	fn turn_other<T>(&mut self,turns: T)
 		where T: IntoIterator<Item=Turn>;
 
-	fn get_starting_regions<T>(&self,avail: T) -> (usize,usize,usize,usize,usize,usize)
+	fn get_starting_regions<T>(&self,avail: T) -> Option<(usize,usize,usize,usize,usize,usize)>
 		where T: IntoIterator<Item=usize>;
 
 	fn placement(&self,count: usize) -> Vec<Turn>;

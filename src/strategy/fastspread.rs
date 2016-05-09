@@ -38,7 +38,7 @@ impl Strategy for FastSpread
 		unimplemented!();
 	}
 
-	fn get_starting_regions<T>(&self,_avail: T) -> (usize,usize,usize,usize,usize,usize)
+	fn get_starting_regions<T>(&self,_avail: T) -> Option<(usize,usize,usize,usize,usize,usize)>
 		where T: IntoIterator<Item=usize>
 	{
 		unimplemented!();
