@@ -1,7 +1,16 @@
+use std::num::ParseIntError;
 use std::str::FromStr;
 
 #[derive(Debug,Clone,PartialEq)]
 pub struct ParseSuperRegionError;
+
+impl From<ParseIntError> for ParseSuperRegionError
+{
+	fn from(_: ParseIntError) -> ParseSuperRegionError
+	{
+		ParseSuperRegionError
+	}
+}
 
 #[derive(Debug,Clone,PartialEq,Eq,PartialOrd,Ord)]
 pub struct SuperRegion
@@ -19,8 +28,8 @@ impl FromStr for SuperRegion
 		let mut sp = s.split_whitespace();
 		Ok(SuperRegion
 		{
-			id: sp.next().unwrap().parse().unwrap(),
-			bonus: sp.next().unwrap().parse().unwrap(),
+			id: try!(sp.next().unwrap().parse()),
+			bonus: try!(sp.next().unwrap().parse()),
 		})
 	}
 }

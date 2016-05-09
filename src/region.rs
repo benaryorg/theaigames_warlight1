@@ -1,10 +1,19 @@
 use std::collections::BTreeSet;
+use std::num::ParseIntError;
 use std::str::FromStr;
 
 use player::Player;
 
 #[derive(Debug,Clone,PartialEq)]
 pub struct ParseRegionError;
+
+impl From<ParseIntError> for ParseRegionError
+{
+	fn from(_: ParseIntError) -> ParseRegionError
+	{
+		ParseRegionError
+	}
+}
 
 #[derive(Debug,Clone,PartialEq,Eq,PartialOrd,Ord)]
 pub struct Region
@@ -25,9 +34,9 @@ impl FromStr for Region
 		let mut sp = s.split_whitespace();
 		Ok(Region
 		{
-			id: sp.next().unwrap().parse().unwrap(),
+			id: try!(sp.next().unwrap().parse()),
 			count: 0,
-			super_region: sp.next().unwrap().parse().unwrap(),
+			super_region: try!(sp.next().unwrap().parse()),
 			player: Player::Unknown,
 			neighbours: BTreeSet::new(),
 		})

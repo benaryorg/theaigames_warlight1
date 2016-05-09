@@ -1,8 +1,17 @@
 use std::fmt;
+use std::num::ParseIntError;
 use std::str::FromStr;
 
 #[derive(Debug,Clone,PartialEq)]
 pub struct ParseRawTurnError;
+
+impl From<ParseIntError> for ParseRawTurnError
+{
+	fn from(_: ParseIntError) -> ParseRawTurnError
+	{
+		ParseRawTurnError
+	}
+}
 
 #[derive(Debug,Clone,PartialEq,Eq,PartialOrd,Ord)]
 pub enum RawTurn
@@ -40,28 +49,28 @@ impl FromStr for RawTurn
 				Place
 				{
 					name: args[0].to_owned(),
-					region: args[2].parse().unwrap(),
-					count: args[3].parse().unwrap(),
+					region: try!(args[2].parse()),
+					count: try!(args[3].parse()),
 				}),
 			5 => Ok(
 				Turn
 				{
 					name: args[0].to_owned(),
-					source: args[2].parse().unwrap(),
-					target: args[3].parse().unwrap(),
-					count: args[4].parse().unwrap(),
+					source: try!(args[2].parse()),
+					target: try!(args[3].parse()),
+					count: try!(args[4].parse()),
 				}),
 			6 =>
 			{
-				let mut args = args.iter().map(|s|s.parse::<usize>()).map(Result::unwrap);
+				let args = try!(args.iter().map(|s|s.parse::<usize>()).collect::<Result<Vec<usize>,ParseIntError>>());
 				Ok(StartingRegions
 				(
-					args.next().unwrap(),
-					args.next().unwrap(),
-					args.next().unwrap(),
-					args.next().unwrap(),
-					args.next().unwrap(),
-					args.next().unwrap()
+					args[0],
+					args[1],
+					args[2],
+					args[3],
+					args[4],
+					args[5],
 				))
 			},
 			_ => Err(ParseRawTurnError),

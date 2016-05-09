@@ -1,10 +1,38 @@
 use rawturn::RawTurn;
 use region::Region;
-use std::str::FromStr;
+use region::ParseRegionError;
 use superregion::SuperRegion;
+use superregion::ParseSuperRegionError;
+
+use std::num::ParseIntError;
+use std::str::FromStr;
 
 #[derive(Debug,Clone,PartialEq)]
 pub struct ParseRequestError;
+
+impl From<ParseIntError> for ParseRequestError
+{
+	fn from(_: ParseIntError) -> ParseRequestError
+	{
+		ParseRequestError
+	}
+}
+
+impl From<ParseSuperRegionError> for ParseRequestError
+{
+	fn from(_: ParseSuperRegionError) -> ParseRequestError
+	{
+		ParseRequestError
+	}
+}
+
+impl From<ParseRegionError> for ParseRequestError
+{
+	fn from(_: ParseRegionError) -> ParseRequestError
+	{
+		ParseRequestError
+	}
+}
 
 #[derive(Debug,Clone,PartialEq,Eq,PartialOrd,Ord)]
 pub enum Request
@@ -41,9 +69,8 @@ impl FromStr for Request
 					.chunks(2)
 					.map(|s|s.join(" "))
 					.map(|s|s.parse::<SuperRegion>())
-					.map(Result::unwrap)
-					.collect::<Vec<_>>();
-				Ok(ListSuperRegions(v))
+					.collect::<Result<Vec<_>,_>>();
+				Ok(ListSuperRegions(try!(v)))
 			},
 			(Some("setup_map"),Some("regions")) =>
 			{
@@ -52,9 +79,8 @@ impl FromStr for Request
 					.chunks(2)
 					.map(|s|s.join(" "))
 					.map(|s|s.parse::<Region>())
-					.map(Result::unwrap)
-					.collect::<Vec<_>>();
-				Ok(ListRegions(v))
+					.collect::<Result<Vec<_>,_>>();
+				Ok(ListRegions(try!(v)))
 			},
 			(Some("setup_map"),Some("neighbors")) =>
 			{
@@ -62,38 +88,54 @@ impl FromStr for Request
 					.collect::<Vec<_>>();
 				let v = v
 					.chunks(2)
-					.map(|c|
-						(c[0].parse::<usize>().unwrap(),c[1]
-							.split(',')
-							.map(|s|s.parse::<usize>())
-							.map(Result::unwrap)
-							.collect::<Vec<_>>()
-						)
-					)
-					.collect::<Vec<_>>();
-				Ok(ListNeighbours(v))
+					.map(|c| -> Result<_,ParseIntError>
+					{
+						Ok
+						((
+							try!(c[0].parse::<usize>()),
+							try!
+							(
+								c[1].split(',')
+									.map(|s|s.parse::<usize>())
+									.collect::<Result<Vec<_>,_>>()
+							)
+						))
+					})
+					.collect::<Result<Vec<_>,_>>();
+				Ok(ListNeighbours(try!(v)))
 			},
 			(Some("pick_starting_regions"),Some(_)) =>
 			{
-				Ok(RequestStartingRegions(
-					args
-						.map(|s|s.parse::<usize>())
-						.map(Result::unwrap)
-						.collect::<Vec<_>>()
+				Ok(RequestStartingRegions
+				(
+					try!
+					(
+						args
+							.map(|s|s.parse::<usize>())
+							.collect::<Result<Vec<_>,_>>()
+					)
 				))
 			},
 			(Some("settings"),Some("your_bot")) => Ok(SettingNameYou(args.next().unwrap().to_owned())),
 			(Some("settings"),Some("opponent_bot")) => Ok(SettingNameOther(args.next().unwrap().to_owned())),
-			(Some("settings"),Some("starting_armies")) => Ok(SettingArmies(args.next().unwrap().parse().unwrap())),
+			(Some("settings"),Some("starting_armies")) => Ok(SettingArmies(try!(args.next().unwrap().parse()))),
 			(Some("update_map"),Some(x)) =>
 			{
 				let mut v = vec![x];
 				v.extend(args);
 				let v = v
 					.chunks(3)
-					.map(|s|(s[0].parse::<usize>().unwrap(),s[1].to_owned(),s[2].parse::<usize>().unwrap()))
-					.collect::<Vec<_>>();
-				Ok(UpdateMap(v))
+					.map(|s| -> Result<_,ParseIntError>
+					{
+						Ok
+						((
+							try!(s[0].parse::<usize>()),
+							s[1].to_owned(),
+							try!(s[2].parse::<usize>())
+						))
+					})
+					.collect::<Result<Vec<_>,_>>();
+				Ok(UpdateMap(try!(v)))
 			},
 			(Some("opponent_moves"),_) =>
 			{
