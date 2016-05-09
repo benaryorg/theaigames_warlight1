@@ -110,7 +110,7 @@ fn main()
 				let v = strategy.placement(armies_left).iter()
 					.filter_map(|t|if let &Turn::Place{region,count,..} = t
 					{
-						strategy.region_mut(region).unwrap().count -= count;
+						strategy.region_mut(region).unwrap().count += count;
 						Some(RawTurn::Place
 						{
 							name: name_you.clone(),
