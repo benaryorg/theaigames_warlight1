@@ -40,7 +40,7 @@ fn main()
 	{
 		use request::Request::*;
 
-		let (consumed,output) = strategy.raw_event(&req);
+		let (consumed,output) = strategy.raw_event_before(&req);
 
 		if let Some(output) = output
 		{
@@ -52,7 +52,7 @@ fn main()
 			continue;
 		}
 
-		match req
+		match req.clone()
 		{
 			ListSuperRegions(sregs) =>
 			{
@@ -167,6 +167,11 @@ fn main()
 					println!("{}",v.join(","));
 				}
 			},
+		}
+
+		if let Some(output) = strategy.raw_event_after(&req)
+		{
+			println!("{}",output);
 		}
 	}
 }

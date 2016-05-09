@@ -30,9 +30,13 @@ pub trait Strategy
 	/// further.
 	/// If the event is not consumed (`false` is returned) it will be further processed by the
 	/// engine.
-	fn raw_event(&mut self,_event: &Request) -> (bool,Option<String>)
+	fn raw_event_before(&mut self,_event: &Request) -> (bool,Option<String>)
 	{
 		(false,None)
+	}
+	fn raw_event_after(&mut self,_event: &Request) -> Option<String>
+	{
+		None
 	}
 }
 
